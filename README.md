@@ -14,7 +14,7 @@ Built entirely as a standalone **Streamlit** application.
 ## Prerequisites
 
 - **Python 3.8+**
-- **Node.js 18+**
+
 
 ## Installation & Setup
 
@@ -47,5 +47,3 @@ Built entirely as a standalone **Streamlit** application.
 - **Model Compatibility**: To solve unpickling conflicts between old versions of `scikit-learn`, the `SmartCrop` model was completely retrained with current dependency versions.
 - **Standalone App**: Features are completely self-contained within Python without requiring complex REST API pipelines, using Streamlit for dynamic front-end rendering and direct scikit-learn calls.
 
-## License
-MIT License
