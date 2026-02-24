@@ -1,5 +1,5 @@
 scikit-learn
 pandas
 numpy
-streamlit
+streamlit>=1.30.0
 requests
