@@ -1,0 +1,98 @@
+================================================================================
+                    AgriAI Integrated System - Technical Report
+================================================================================
+
+1. OVERVIEW
+--------------------------------------------------------------------------------
+AgriAI is a unified, intelligent web application designed to assist farmers and 
+agricultural professionals in making data-driven decisions. The core functionality
+is the "Smart Crop Suggestion" system, which recommends the most optimal crop 
+to plant based on environmental and soil metrics.
+
+2. TECHNICAL STACK
+--------------------------------------------------------------------------------
+The application is built on a modern, decoupled architecture using entirely 
+Python-based technologies:
+
+- Frontend Framework: Streamlit
+  Reasoning: Selected for its rapid development capabilities and native Python 
+  integration. It allows for the creation of beautiful, interactive, and data-
+  centric user interfaces, significantly reducing the complexity of the codebase.
+
+- Machine Learning Library: scikit-learn
+  Reasoning: The industry standard for classical machine learning, providing 
+  efficient tools for predictive data analysis, model pipelines, and preprocessing.
+
+- Data Manipulation: Pandas & NumPy
+  Reasoning: Essential for handling, cleaning, and formatting the dataset during 
+  both training and real-time inference.
+
+- External APIs: Wikimedia API & Python `requests`
+  Reasoning: Used to dynamically fetch and display real-world images of the 
+  recommended crops in the UI, enhancing user experience.
+
+3. MACHINE LEARNING MODEL
+--------------------------------------------------------------------------------
+- Model Used: Gaussian Naive Bayes (GaussianNB)
+- Pipeline: StandardScaler -> Gaussian Naive Bayes
+  
+Reasoning for Model Choice:
+Gaussian Naive Bayes is a well-suited classification algorithm for this problem 
+space. The environmental features (Nitrogen, Phosphorous, Potassium, Temperature, 
+Humidity, pH, Rainfall) often follow a continuous distribution. Naive Bayes is 
+computationally extremely fast, requires relatively less training data to estimate 
+parameters, and scales exceptionally well. The `StandardScaler` ensures all 
+features contribute equally to the distance calculations, preventing features 
+with larger scales (like Rainfall) from dominating the outcome.
+
+4. DATASET INFORMATION
+--------------------------------------------------------------------------------
+- Source Dataset: `Crop Recommendation Dataset`
+- Features (Inputs): 
+  - Nitrogen (N) 
+  - Phosphorous (P) 
+  - Potassium (K) 
+  - Temperature (°C)
+  - Humidity (%)
+  - pH Level
+  - Rainfall (mm)
+- Target (Output): `label` (String representing the crop name, e.g., 'rice', 'maize')
+- Classes: 22 distinct crop categories.
+
+Data Preprocessing Strategies Used:
+- Outlier Removal: Implemented Interquartile Range (IQR) filtering specifically 
+  on numeric columns during the retraining phase (`retrain_smartcrop.py`) to 
+  ensure anomalous data points didn't skew the model's accuracy.
+- Normalization: Handled by the `StandardScaler` in the `scikit-learn` pipeline.
+
+5. APP FEATURES & CAPABILITIES
+--------------------------------------------------------------------------------
+- User-Friendly Interface: A dynamic, dark-themed UI built with Streamlit.
+- Realistic Dropdowns: form dropdowns populated with real-world agricultural 
+  ranges (e.g., pH 0-14, Nitrogen 0-300 kg/ha) rather than just the strict bounds 
+  of the dataset.
+- Real-time Predictions: Instantaneous model inference via the FastAPI backend.
+- Multi-lingual Support: Automatically translates the 22 final predicted crop 
+  names from English to Hindi (e.g., "Rice - चावल (Chawal)") for better 
+  accessibility to native farmers.
+- Dynamic Visuals: Integrates the Wikimedia API to scrape and display an image 
+  of the predicted crop alongside the recommendation.
+
+6. APPLICATION WORKFLOW
+--------------------------------------------------------------------------------
+The system prioritizes simplicity by handling UI rendering and Inference locally.
+
+Workflow:
+1. The Streamlit UI collects 7 environmental data points from the user.
+2. When the user clicks "Predict", Streamlit triggers the local ML Service.
+3. The data is parsed and passed into `crop_suggestion_service.py`.
+4. The service loads the pre-trained `model.pkl` (GaussianNB pipeline).
+5. The data is reshaped into a NumPy array and passed into `model.predict()`.
+6. The string result is extracted, formatted with `.title()`, and returned to 
+   the main Streamlit script.
+7. Streamlit seamlessly applies translations natively via a dictionary map.
+8. Streamlit initiates a background `requests.get()` to Wikipedia to dynamically 
+   fetch a high-quality visualization of that crop.
+9. Streamlit cleanly renders the final Hindi-Translated string and image 
+   back to the Recommendation Dashboard.
+================================================================================
